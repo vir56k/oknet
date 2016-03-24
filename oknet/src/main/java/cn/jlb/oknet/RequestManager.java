@@ -1,5 +1,8 @@
 package cn.jlb.oknet;
 
+import android.os.Handler;
+import android.os.Looper;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
@@ -18,6 +21,7 @@ import okhttp3.Response;
 public class RequestManager {
     private static RequestParaInterceptor sMyRequestParaInterceptor;
     private static DefaultExceptionHandler sDefaultExceptionHandler;
+    private static Handler mHandler;
 
     /**
      * 参数拦截器
@@ -43,6 +47,7 @@ public class RequestManager {
      * @param myRequest
      */
     public static CommonRequest excute(final CommonRequest myRequest) {
+        ensureInit();
         try {
             ProgressIndicator progressIndicator = myRequest.getProgressIndicator();//进度条指示器
             if (progressIndicator != null) progressIndicator.onProgressStart();
@@ -72,6 +77,7 @@ public class RequestManager {
     }
 
     public static CommonRequest excute(final FileUploadRequest myRequest) {
+        ensureInit();
         try {
             ProgressIndicator progressIndicator = myRequest.getProgressIndicator();//进度条指示器
             if (progressIndicator != null) progressIndicator.onProgressStart();
@@ -98,6 +104,11 @@ public class RequestManager {
             return myRequest;
         }
 
+    }
+
+    private static void ensureInit() {
+        if (mHandler == null)
+            mHandler = new Handler(Looper.getMainLooper());
     }
 
     private static class OkHttpResponseHandler implements Callback {
@@ -143,18 +154,33 @@ public class RequestManager {
                     throw new IOException("Unexpected code " + response);
                 commonMessage = CommonMessageParser.parse(responseString);
                 if (commonMessage.code == 0) {
-                    Object responseObj = null;
                     if (callbackObject != null) {
-                        responseObj = callbackObject.parseResponse(commonMessage.body, commonMessage, responseString);
+                        final Object responseObj = callbackObject.parseResponse(commonMessage.body, commonMessage, responseString);
+                        //在ui线程执行
+                        runOnUiThread(new ParaRunnable(new Object[]{responseObj, commonMessage, responseString}) {
+                            @Override
+                            protected void run(Object[] paras) {
+                                CommonMessage commonMessage1 = (CommonMessage) paras[1];
+                                String responseString1 = (String) paras[2];
+                                callbackObject.onSuccess(responseObj, commonMessage1, responseString1);
+                            }
+                        });
                     }
-                    if (callbackObject != null)
-                        callbackObject.onSuccess(responseObj, commonMessage, responseString);
                 } else {//遇到服务端返回：非0的code,我们自定义异常
                     throw new NoZeroException(commonMessage.code, commonMessage.msg, commonMessage.body);
                 }
             } catch (Exception ex) {
                 failure(mCommonRequest, httpCode, ex, commonMessage, responseString);
             }
+        }
+
+        /**
+         * 运行在ui线程
+         *
+         * @param runnable
+         */
+        private static void runOnUiThread(ParaRunnable runnable) {
+            mHandler.post(runnable);
         }
 
         private void failure(CommonRequest commonRequest, int httpCode, Exception ex1, CommonMessage responseMessage, String responseString) {
@@ -210,6 +236,30 @@ public class RequestManager {
                 sb.append(String.format("%s=%s; ", item.getKey(), item.getValue().getName()));
             OknetLogUtil.i(sb.toString());
         }
+    }
+
+
+    private abstract static class ParaRunnable implements Runnable {
+        private Object[] paras;
+
+        public ParaRunnable(Object[] para) {
+            this.paras = para;
+        }
+
+        public Object[] getParas() {
+            return paras;
+        }
+
+        public Object getPara(int index) {
+            return paras[index];
+        }
+
+        @Override
+        public void run() {
+            run(getParas());
+        }
+
+        protected abstract void run(Object[] paras);
     }
 
 }

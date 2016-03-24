@@ -27,10 +27,10 @@ public abstract class CommonCallback<T> implements CommonCallbackInterface<T> {
         this.responseType = type;
     }
 
-    public abstract void onSuccess(T reslut, CommonMessage responseMessage, String responseString);
+    public abstract void onSuccess(T messsageBodyObject, CommonMessage commonMessage, String allResponseString);
 
     @Override
-    public boolean onFailure(int httpCode, Exception exception, CommonMessage responseMessage, String responseString) {
+    public boolean onFailure(int httpCode, Exception exception, CommonMessage responseMessage, String allResponseString) {
         return false;
     }
 
@@ -40,7 +40,7 @@ public abstract class CommonCallback<T> implements CommonCallbackInterface<T> {
     }
 
     @Override
-    public T parseResponse(String bodyString, CommonMessage rootEntity, String responseString) {
+    public T parseResponse(String bodyString, CommonMessage commonMessage, String allResponseString) {
         if (cls != null && cls.equals(String.class)) {
             return cast(bodyString);
         } else {

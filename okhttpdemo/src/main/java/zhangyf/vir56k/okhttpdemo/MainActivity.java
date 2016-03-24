@@ -185,12 +185,7 @@ public class MainActivity extends Activity {
     }
 
     private void alert(final String s) {
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(getActivity(), s, 0).show();
-            }
-        });
+        Toast.makeText(getActivity(), s, 0).show();
     }
 
     public Activity getActivity() {

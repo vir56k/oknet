@@ -7,11 +7,11 @@ package cn.jlb.oknet;
  */
 public interface CommonCallbackInterface<T> {
 
-    void onSuccess(T json_type, CommonMessage responseMessage, String responseString);
+    void onSuccess(T messsageBodyObject, CommonMessage responseMessage, String allResponseString);
 
-    boolean onFailure(int httpCode, Exception ex1, CommonMessage responseMessage, String responseString);
+    boolean onFailure(int httpCode, Exception ex1, CommonMessage responseMessage, String allResponseString);
 
     void onStart();
 
-    T parseResponse(String bodyString, CommonMessage rootEntity, String responseString);
+    T parseResponse(String bodyString, CommonMessage rootEntity, String allResponseString);
 }
