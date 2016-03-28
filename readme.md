@@ -104,3 +104,49 @@ oknet是一套基于okhttp的android网络http框架。
                     }
                 })
                 .excute();
+                
+                
+                
+# 同步的方式发送http请求
+ 
+    private void demo_syncExcuete() {
+
+        new AsyncTask<Void, Void, Void>() {
+            boolean isok;
+            String mResult1;
+
+            @Override
+            protected Void doInBackground(Void... params) {
+                RequestBuilder.with(getActivity())
+                        .URL(Apis.GAEA_URLS.CAB_ADVERT_LIST)
+                        .para("cabinet_code", "1412345678")
+                        .onSuccess(new CommonCallback<String>(String.class) {
+                            @Override
+                            public void onSuccess(String result, CommonMessage responseMessage, String responseString) {
+                                isok = true;
+                                mResult1 = result;
+                            }
+
+                            @Override
+                            public boolean onFailure(int httpCode, Exception exception, CommonMessage responseMessage, String allResponseString) {
+                                isok = false;
+                                return super.onFailure(httpCode, exception, responseMessage, allResponseString);
+                            }
+                        })
+                        .syncExcute();
+
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void aVoid) {
+                if (isok) {
+                    Log.i(TAG, "==成功:" + mResult1);
+                    alert("==成功");
+                }
+            }
+        }.execute();
+
+    }
+    
+    
