@@ -9,6 +9,8 @@ import java.util.WeakHashMap;
 
 /**
  * http 请求 构造器
+ * 目前不支持 文件上传的同步放过
+ * 不支持 get 方式
  * Created by zhangyunfei on 15/12/15.
  */
 public class RequestBuilder {
@@ -76,6 +78,24 @@ public class RequestBuilder {
         return request;
     }
 
+    /**
+     * 同步执行
+     *
+     * @return
+     */
+    public CommonRequest syncExcute() {
+        try {
+            CommonRequest request = this.get();
+            return RequestManager.syncExcute(request);
+        } finally {
+            clear();
+        }
+    }
+
+    /**
+     * 执行请求
+     * @return
+     */
     public CommonRequest excute() {
         try {
             CommonRequest request = this.get();

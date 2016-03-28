@@ -1,6 +1,7 @@
 package zhangyf.vir56k.okhttpdemo;
 
 import android.app.Activity;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
@@ -33,7 +34,8 @@ public class MainActivity extends Activity {
 //        demo2();
 //        demo_jlb_app_login();
 //        demo_uploadFile();
-        demo4_prgressDialog();
+//        demo4_prgressDialog();
+        demo_syncExcuete();
     }
 
     /* 这里还无法通过服务器鉴权*/
@@ -162,6 +164,7 @@ public class MainActivity extends Activity {
     private void demo1() {
         RequestBuilder.with(getActivity())
                 .URL(Apis.GAEA_URLS.CAB_ADVERT_LIST)
+                .para("cabinet_code", "1412345678")
                 .onSuccess(new CommonCallback<String>(String.class) {
                     @Override
                     public void onSuccess(String result, CommonMessage responseMessage, String responseString) {
@@ -182,6 +185,50 @@ public class MainActivity extends Activity {
                     }
                 })
                 .excute();
+    }
+
+
+    /**
+     * 同步执行
+     */
+    private void demo_syncExcuete() {
+
+        new AsyncTask<Void, Void, Void>() {
+            boolean isok;
+            String mResult1;
+
+            @Override
+            protected Void doInBackground(Void... params) {
+                RequestBuilder.with(getActivity())
+                        .URL(Apis.GAEA_URLS.CAB_ADVERT_LIST)
+                        .para("cabinet_code", "1412345678")
+                        .onSuccess(new CommonCallback<String>(String.class) {
+                            @Override
+                            public void onSuccess(String result, CommonMessage responseMessage, String responseString) {
+                                isok = true;
+                                mResult1 = result;
+                            }
+
+                            @Override
+                            public boolean onFailure(int httpCode, Exception exception, CommonMessage responseMessage, String allResponseString) {
+                                isok = false;
+                                return super.onFailure(httpCode, exception, responseMessage, allResponseString);
+                            }
+                        })
+                        .syncExcute();
+
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void aVoid) {
+                if (isok) {
+                    Log.i(TAG, "==成功:" + mResult1);
+                    alert("==成功");
+                }
+            }
+        }.execute();
+
     }
 
     private void alert(final String s) {

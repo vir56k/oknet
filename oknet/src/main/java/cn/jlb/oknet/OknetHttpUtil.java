@@ -42,6 +42,13 @@ public class OknetHttpUtil {
     /**
      * 同步执行
      */
+    public static Call newCall(Request request) throws IOException {
+        return mOkHttpClient.newCall(request);
+    }
+
+    /**
+     * 同步执行
+     */
     public static Response execute(Request request) throws IOException {
         return mOkHttpClient.newCall(request).execute();
     }

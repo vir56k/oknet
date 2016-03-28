@@ -42,12 +42,13 @@ public class RequestManager {
     }
 
     /**
-     * 执行请求
+     * 同步执行请求
      *
      * @param myRequest
      */
-    public static CommonRequest excute(final CommonRequest myRequest) {
+    public static CommonRequest syncExcute(final CommonRequest myRequest) {
         ensureInit();
+        OkHttpResponseHandler callback = null;
         try {
             ProgressIndicator progressIndicator = myRequest.getProgressIndicator();//进度条指示器
             if (progressIndicator != null) progressIndicator.onProgressStart();
@@ -60,7 +61,49 @@ public class RequestManager {
             pringlog(myRequest.getUrl(), userPara, myRequest.getParas(), null, myRequest.getObjectID() + "");
 
             Request request = RequestConvert.convert(myRequest);
-            Callback callback = null;
+            if (myRequest.getCallback() != null)
+                callback = OkHttpResponseHandler.create(myRequest);
+            Call call = OknetHttpUtil.newCall(request);
+            try {
+                Response response = call.execute();
+                if (callback != null)
+                    callback.onResponse(call, response);
+            } catch (IOException ex1) {
+                if (callback != null)
+                    callback.onFailure(call, ex1);
+            }
+            myRequest.setTag("call", call);
+            return myRequest;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            if (callback != null)
+                callback.failure(myRequest, 0, ex, null, null);
+            return myRequest;
+        }
+
+    }
+
+    /**
+     * 异步执行请求
+     *
+     * @param myRequest
+     */
+    public static CommonRequest excute(final CommonRequest myRequest) {
+        ensureInit();
+        OkHttpResponseHandler callback = null;
+        try {
+            ProgressIndicator progressIndicator = myRequest.getProgressIndicator();//进度条指示器
+            if (progressIndicator != null) progressIndicator.onProgressStart();
+
+            HashMap<String, String> userPara;
+            userPara = (myRequest.getParas() == null) ? new HashMap<String, String>() : new HashMap<>(myRequest.getParas());
+            // 公共参数处理
+            if (sMyRequestParaInterceptor != null)
+                sMyRequestParaInterceptor.onProcessCommonRequestPara(myRequest.getParas());
+            pringlog(myRequest.getUrl(), userPara, myRequest.getParas(), null, myRequest.getObjectID() + "");
+
+            Request request = RequestConvert.convert(myRequest);
+
             if (myRequest.getCallback() != null)
                 callback = OkHttpResponseHandler.create(myRequest);
             Call call = OknetHttpUtil.enqueue(request, callback);
@@ -68,16 +111,21 @@ public class RequestManager {
             return myRequest;
         } catch (Exception ex) {
             ex.printStackTrace();
-            CommonCallbackInterface<?> callback = myRequest.getCallback();
             if (callback != null)
-                callback.onFailure(0, ex, null, null);
+                callback.failure(myRequest, 0, ex, null, null);
             return myRequest;
         }
 
     }
 
+    /**
+     * 异步执行，文件上传
+     * @param myRequest
+     * @return
+     */
     public static CommonRequest excute(final FileUploadRequest myRequest) {
         ensureInit();
+        OkHttpResponseHandler callback = null;
         try {
             ProgressIndicator progressIndicator = myRequest.getProgressIndicator();//进度条指示器
             if (progressIndicator != null) progressIndicator.onProgressStart();
@@ -90,7 +138,6 @@ public class RequestManager {
             pringlog(myRequest.getUrl(), userPara, myRequest.getParas(), myRequest.getFileParas(), myRequest.getObjectID() + "");
 
             Request request = RequestConvert.convert(myRequest);
-            Callback callback = null;
             if (myRequest.getCallback() != null)
                 callback = OkHttpResponseHandler.create(myRequest);
             Call call = OknetHttpUtil.enqueue(request, callback);
@@ -98,9 +145,8 @@ public class RequestManager {
             return myRequest;
         } catch (Exception ex) {
             ex.printStackTrace();
-            CommonCallbackInterface<?> callback = myRequest.getCallback();
             if (callback != null)
-                callback.onFailure(0, ex, null, null);
+                callback.failure(myRequest, 0, ex, null, null);
             return myRequest;
         }
 
@@ -183,7 +229,7 @@ public class RequestManager {
             mHandler.post(runnable);
         }
 
-        private void failure(CommonRequest commonRequest, int httpCode, Exception ex1, CommonMessage responseMessage, String responseString) {
+        public void failure(CommonRequest commonRequest, int httpCode, Exception ex1, CommonMessage responseMessage, String responseString) {
             printError(commonRequest, httpCode, ex1, responseMessage, responseString);
             if (callbackObject == null)
                 return;
