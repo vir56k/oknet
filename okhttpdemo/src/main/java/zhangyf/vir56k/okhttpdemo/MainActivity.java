@@ -10,14 +10,18 @@ import android.widget.Toast;
 import com.google.gson.reflect.TypeToken;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.List;
 
 import cn.jlb.oknet.CommonCallback;
 import cn.jlb.oknet.CommonMessage;
 import cn.jlb.oknet.DialogProgressIndicator;
+import cn.jlb.oknet.FileDownloader;
 import cn.jlb.oknet.NoZeroException;
+import cn.jlb.oknet.OknetHttpUtil;
 import cn.jlb.oknet.RequestBuilder;
+import okhttp3.Call;
 
 
 public class MainActivity extends Activity {
@@ -35,8 +39,11 @@ public class MainActivity extends Activity {
 //        demo_jlb_app_login();
 //        demo_uploadFile();
 //        demo4_prgressDialog();
-        demo_syncExcuete();
+//        demo_syncExcuete();
+
+        downloadFileDemo();
     }
+
 
     /* 这里还无法通过服务器鉴权*/
 //    private void demo_jlb_app_login() {
@@ -229,6 +236,29 @@ public class MainActivity extends Activity {
             }
         }.execute();
 
+    }
+
+
+    public static void downloadFileDemo() {
+        String url = "http://d.hiphotos.baidu.com/zhidao/pic/item/08f790529822720e67a9065978cb0a46f21fab2a.jpg";
+        File dest = new File(Environment.getExternalStorageDirectory(), "6f21fab2a.jpg");
+        FileDownloader.downloadFile(url, dest, new FileDownloader.DownloadFileProgressListener2() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                System.out.println("Err: " + e.getMessage());
+            }
+
+            @Override
+            public void onProgress(long bytesRead, long contentLength, boolean done) {
+                System.out.println(String.format("文件下载进度, read %s/%s", bytesRead, contentLength));
+            }
+
+            @Override
+            protected void onSuccess(Call call, File file) {
+                System.out.println("文件下载成功吗 =" + file.exists());
+
+            }
+        });
     }
 
     private void alert(final String s) {

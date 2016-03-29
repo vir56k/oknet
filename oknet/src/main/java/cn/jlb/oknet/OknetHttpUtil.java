@@ -2,6 +2,7 @@ package cn.jlb.oknet;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -26,11 +27,15 @@ public class OknetHttpUtil {
     private static OkHttpClient mOkHttpClient;
 
     static {
+        mOkHttpClient = createOkHttpClient();
+    }
+
+    public static OkHttpClient createOkHttpClient() {
         if (OknetConfig.getExternalCacheDir() == null)
             throw new RuntimeException("在使用okhttp前，请调用OkHttpConfig.setExternalCacheDir配置缓存目录");
         Cache cache = new Cache(OknetConfig.getExternalCacheDir(), cacheSize);
 
-        mOkHttpClient = new OkHttpClient.Builder().
+        return new OkHttpClient.Builder().
                 connectTimeout(30, TimeUnit.SECONDS).
                 readTimeout(30, TimeUnit.SECONDS).
                 writeTimeout(30, TimeUnit.SECONDS).
@@ -79,6 +84,13 @@ public class OknetHttpUtil {
         });
     }
 
+    /**
+     * get 请求
+     *
+     * @param url
+     * @return
+     * @throws IOException
+     */
     public static String get(String url) throws IOException {
         Request request = new Request.Builder().url(url).build();
         Response response = execute(request);
@@ -86,10 +98,8 @@ public class OknetHttpUtil {
             return response.body().string();
         } else {
             throw new IOException("Unexpected code " + response);
-
         }
     }
-
 
 
 }

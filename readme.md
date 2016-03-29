@@ -8,6 +8,7 @@ oknet是一套基于okhttp的android网络http框架。
 5.支持 公共参数 的配置
 6.支持每个http请求的 日志 记录
 7.支持 默认异常 的处理
+8.支持 移除文件下载（通过FileDownloader）
 
 #适用场景
 和服务端产生约定：
@@ -149,4 +150,28 @@ oknet是一套基于okhttp的android网络http框架。
 
     }
     
+# 下载文件
+
+    public static void downloadFileDemo() {
+        String url = "http://d.hiphotos.baidu.com/zhidao/pic/item/08f790529822720e67a9065978cb0a46f21fab2a.jpg";
+        File dest = new File(Environment.getExternalStorageDirectory(), "6f21fab2a.jpg");
+        FileDownloader.downloadFile(url, dest, new FileDownloader.DownloadFileProgressListener2() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                System.out.println("Err: " + e.getMessage());
+            }
+
+            @Override
+            public void onProgress(long bytesRead, long contentLength, boolean done) {
+                System.out.println(String.format("文件下载进度, read %s/%s", bytesRead, contentLength));
+            }
+
+            @Override
+            protected void onSuccess(Call call, File file) {
+                System.out.println("文件下载成功吗 =" + file.exists());
+
+            }
+        });
+    }
+
     
