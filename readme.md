@@ -18,16 +18,15 @@ oknet是一套基于okhttp的android网络http框架。
   3.code非零表示失败，msg表示失败的文本。
 
 #post简单请求，和String类型的响应
- RequestBuilder.with(getActivity())
-                .URL(Apis.GAEA_URLS.CAB_ADVERT_LIST)
-                .onSuccess(new CommonCallback<String>(String.class) {
+ RequestBuilder.with(getActivity()).URL(Apis.GAEA_URLS.CAB_ADVERT_LIST).
+                onSuccess(new CommonCallback<String>(String.class) {
                     @Override
                     public void onSuccess(String result, CommonMessage responseMessage, String responseString) {
                         Log.i(TAG, "==成功:" + result);
                         alert("==成功");
                     }
-                })
-                .excute();
+                }).excute();
+                
 #带参数的请求，和 Json序列化的回调
 
         Type t = new TypeToken<List<Demo2Cell>>() {
