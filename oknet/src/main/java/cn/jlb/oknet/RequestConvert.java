@@ -26,6 +26,7 @@ public class RequestConvert {
         return new Request.Builder()
                 .url(inRequest.getUrl())
                 .post(formBodyBuilder.build())
+                .addHeader("Accept-Encoding", "gzip,deflate")
                 .build();
     }
 

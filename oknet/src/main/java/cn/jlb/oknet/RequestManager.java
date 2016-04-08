@@ -11,6 +11,7 @@ import java.util.Map;
 
 import okhttp3.Call;
 import okhttp3.Callback;
+import okhttp3.Headers;
 import okhttp3.Request;
 import okhttp3.Response;
 
@@ -58,7 +59,7 @@ public class RequestManager {
             // 公共参数处理
             if (sMyRequestParaInterceptor != null)
                 sMyRequestParaInterceptor.onProcessCommonRequestPara(myRequest.getParas());
-            pringlog(myRequest.getUrl(), userPara, myRequest.getParas(), null, myRequest.getObjectID() + "");
+            printParalog(myRequest.getUrl(), userPara, myRequest.getParas(), null, myRequest.getObjectID() + "");
 
             Request request = RequestConvert.convert(myRequest);
             if (myRequest.getCallback() != null)
@@ -100,10 +101,9 @@ public class RequestManager {
             // 公共参数处理
             if (sMyRequestParaInterceptor != null)
                 sMyRequestParaInterceptor.onProcessCommonRequestPara(myRequest.getParas());
-            pringlog(myRequest.getUrl(), userPara, myRequest.getParas(), null, myRequest.getObjectID() + "");
-
+            printParalog(myRequest.getUrl(), userPara, myRequest.getParas(), null, myRequest.getObjectID() + "");
             Request request = RequestConvert.convert(myRequest);
-
+            printRequestHeadersLog(myRequest, request);
             if (myRequest.getCallback() != null)
                 callback = OkHttpResponseHandler.create(myRequest);
             Call call = OknetHttpUtil.enqueue(request, callback);
@@ -115,6 +115,16 @@ public class RequestManager {
                 callback.failure(myRequest, 0, ex, null, null);
             return myRequest;
         }
+
+    }
+
+    private static void printRequestHeadersLog(CommonRequest myRequest, Request okHttpRequest) {
+        StringBuilder sb = new StringBuilder();
+        Headers requestHeaders = okHttpRequest.headers();
+        for (int i = 0; i < requestHeaders.size(); i++) {
+            sb.append(requestHeaders.name(i) + ": " + requestHeaders.value(i) + ",");
+        }
+        OknetLogUtil.i(String.format("【%s】【请求头】[%s]", myRequest.getObjectID(), sb.toString()));
 
     }
 
@@ -136,8 +146,7 @@ public class RequestManager {
             // 公共参数处理
             if (sMyRequestParaInterceptor != null)
                 sMyRequestParaInterceptor.onProcessUploadFileRequestPara(myRequest.getParas(), myRequest.fileParas);
-            pringlog(myRequest.getUrl(), userPara, myRequest.getParas(), myRequest.getFileParas(), myRequest.getObjectID() + "");
-
+            printParalog(myRequest.getUrl(), userPara, myRequest.getParas(), myRequest.getFileParas(), myRequest.getObjectID() + "");
             Request request = RequestConvert.convert(myRequest);
             if (myRequest.getCallback() != null)
                 callback = OkHttpResponseHandler.create(myRequest);
@@ -196,7 +205,10 @@ public class RequestManager {
                 httpCode = response.code();
                 responseString = response.body().string();
                 response.body().close();
-                OknetLogUtil.i(String.format("【%s】【解析响应】httpCode=%s, responseString= %s", mCommonRequest.getObjectID(), httpCode, responseString));
+
+                printResponseHeaderLog(response);
+                OknetLogUtil.i(String.format("【%s】【响应体】httpCode=%s, responseString= %s", mCommonRequest.getObjectID(), httpCode, responseString));
+
                 if (!response.isSuccessful())
                     throw new IOException("Unexpected code " + response);
                 commonMessage = CommonMessageParser.parse(responseString);
@@ -219,6 +231,17 @@ public class RequestManager {
             } catch (Exception ex) {
                 failure(mCommonRequest, httpCode, ex, commonMessage, responseString);
             }
+        }
+
+        private void printResponseHeaderLog(Response response) {
+            StringBuilder sb = new StringBuilder();
+            Headers responseHeaders = response.headers();
+            for (int i = 0; i < responseHeaders.size(); i++) {
+                sb.append(responseHeaders.name(i) + ": " + responseHeaders.value(i) + ",");
+            }
+            OknetLogUtil.i(String.format("【%s】【响应头】[%s]", mCommonRequest.getObjectID(), sb.toString()));
+
+
         }
 
         /**
@@ -244,7 +267,7 @@ public class RequestManager {
 
     private static void printError(CommonRequest commonRequest, int httpCode, Exception ex1, CommonMessage responseMessage, String responseString) {
         StringBuilder sb = new StringBuilder();
-        sb.append(String.format("【%s】【响应异常：】 ", commonRequest.getObjectID()));
+        sb.append(String.format("【%s】【响应异常】 ", commonRequest.getObjectID()));
         sb.append(String.format("http code ：%s, ", httpCode));
         sb.append(String.format("exception message：%s, ", ex1.getMessage() == null ? "null" : ex1.getMessage()));
         sb.append(String.format("exception type：%s, ", ex1.getClass().toString()));
@@ -253,23 +276,23 @@ public class RequestManager {
         OknetLogUtil.e(sb.toString());
     }
 
-    private static void pringlog(String url, Map<String, String> userParas, Map<String, String> allPara, Map<String, File> fileUploadPara, String objectID) {
-        OknetLogUtil.i(String.format("【%s】【目标地址：】%s", objectID, url));
+    private static void printParalog(String url, Map<String, String> userParas, Map<String, String> allPara, Map<String, File> fileUploadPara, String objectID) {
+        OknetLogUtil.i(String.format("【%s】【目标地址】%s", objectID, url));
         Iterator it;
         StringBuilder sb = new StringBuilder();
-        sb.append(String.format("【%s】【用户参数：】", objectID));
+        sb.append(String.format("【%s】【用户参数】", objectID));
         if (userParas != null) {
             it = userParas.entrySet().iterator();
             while (it.hasNext()) {
                 Map.Entry entry = (Map.Entry) it.next();
-                sb.append(String.format("%s = %s; ", entry.getKey(), entry.getValue()));
+                sb.append(String.format("%s=%s; ", entry.getKey(), entry.getValue()));
             }
         }
         OknetLogUtil.i(sb.toString());
 
         sb.setLength(0);
         it = allPara.entrySet().iterator();
-        sb.append(String.format("【%s】【完整参数：】", objectID));
+        sb.append(String.format("【%s】【完整参数】", objectID));
         while (it.hasNext()) {
             Map.Entry entry = (Map.Entry) it.next();
             sb.append(String.format("%s=%s; ", entry.getKey(), entry.getValue()));
@@ -278,7 +301,7 @@ public class RequestManager {
 
         if (fileUploadPara != null && fileUploadPara.size() > 0) {
             sb.setLength(0);
-            sb.append(String.format("【%s】【文件上传参数：】", objectID));
+            sb.append(String.format("【%s】【文件上传参数】", objectID));
             for (Map.Entry<String, File> item : fileUploadPara.entrySet())
                 sb.append(String.format("%s=%s; ", item.getKey(), item.getValue().getName()));
             OknetLogUtil.i(sb.toString());
