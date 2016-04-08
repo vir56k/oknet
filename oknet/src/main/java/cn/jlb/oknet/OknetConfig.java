@@ -9,6 +9,7 @@ public class OknetConfig {
 
     private static File externalCacheDir;
     private static LogInterceptor logInterceptor;
+    private static boolean isEnableGzipRequest = false;
 
     public static File getExternalCacheDir() {
         return externalCacheDir;
@@ -16,6 +17,7 @@ public class OknetConfig {
 
     /**
      * 设置 缓存目录
+     *
      * @param externalCacheDir
      */
     public static void setExternalCacheDir(File externalCacheDir) {
@@ -28,9 +30,10 @@ public class OknetConfig {
 
     /**
      * 设置 默认异常处理器
+     *
      * @param defaultExceptionHandler
      */
-    public static void setDefaultExceptionHandler(DefaultExceptionHandler defaultExceptionHandler){
+    public static void setDefaultExceptionHandler(DefaultExceptionHandler defaultExceptionHandler) {
         RequestManager.setDefaultExceptionHandler(defaultExceptionHandler);
     }
 
@@ -40,9 +43,18 @@ public class OknetConfig {
 
     /**
      * 设置 日志 拦截器
+     *
      * @param logInterceptor
      */
     public static void setLogInterceptor(LogInterceptor logInterceptor) {
         OknetConfig.logInterceptor = logInterceptor;
+    }
+
+    public static boolean isEnableGzipRequest() {
+        return isEnableGzipRequest;
+    }
+
+    public static void isEnableGzipRequest(boolean isEnable) {
+        isEnableGzipRequest = isEnable;
     }
 }

@@ -35,13 +35,15 @@ public class OknetHttpUtil {
             throw new RuntimeException("在使用okhttp前，请调用OkHttpConfig.setExternalCacheDir配置缓存目录");
         Cache cache = new Cache(OknetConfig.getExternalCacheDir(), cacheSize);
 
-        return new OkHttpClient.Builder().
+        OkHttpClient.Builder builder = new OkHttpClient.Builder().
                 connectTimeout(30, TimeUnit.SECONDS).
                 readTimeout(30, TimeUnit.SECONDS).
                 writeTimeout(30, TimeUnit.SECONDS).
                 retryOnConnectionFailure(true).
-                cache(cache).
-                build();
+                cache(cache);
+        if (OknetConfig.isEnableGzipRequest())
+            builder.addNetworkInterceptor(new GzipRequestInterceptor());
+        return builder.build();
     }
 
     /**

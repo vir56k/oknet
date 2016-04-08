@@ -33,7 +33,7 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-//        demo1();
+        demo1();
 //        demo3();
 //        demo2();
 //        demo_jlb_app_login();
@@ -41,7 +41,7 @@ public class MainActivity extends Activity {
 //        demo4_prgressDialog();
 //        demo_syncExcuete();
 
-        downloadFileDemo();
+//        downloadFileDemo();
     }
 
 
