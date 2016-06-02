@@ -3,6 +3,7 @@ package cn.jlb.oknet;
 import android.util.Log;
 
 /**
+ * OknetLogUtil
  * Created by zhangyunfei on 16/3/15.
  */
 public class OknetLogUtil {

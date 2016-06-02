@@ -4,6 +4,8 @@ import java.io.File;
 import java.util.Map;
 
 /**
+ * FileUploadRequest
+ *
  * Created by zhangyunfei on 16/3/16.
  */
 public class FileUploadRequest extends CommonRequest {

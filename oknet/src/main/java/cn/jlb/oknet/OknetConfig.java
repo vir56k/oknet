@@ -3,6 +3,8 @@ package cn.jlb.oknet;
 import java.io.File;
 
 /**
+ * OknetConfig
+ *
  * Created by zhangyunfei on 16/3/11.
  */
 public class OknetConfig {
@@ -18,7 +20,7 @@ public class OknetConfig {
     /**
      * 设置 缓存目录
      *
-     * @param externalCacheDir
+     * @param externalCacheDir externalCacheDir
      */
     public static void setExternalCacheDir(File externalCacheDir) {
         OknetConfig.externalCacheDir = externalCacheDir;
@@ -31,7 +33,7 @@ public class OknetConfig {
     /**
      * 设置 默认异常处理器
      *
-     * @param defaultExceptionHandler
+     * @param defaultExceptionHandler defaultExceptionHandler
      */
     public static void setDefaultExceptionHandler(DefaultExceptionHandler defaultExceptionHandler) {
         RequestManager.setDefaultExceptionHandler(defaultExceptionHandler);
@@ -44,7 +46,7 @@ public class OknetConfig {
     /**
      * 设置 日志 拦截器
      *
-     * @param logInterceptor
+     * @param logInterceptor logInterceptor
      */
     public static void setLogInterceptor(LogInterceptor logInterceptor) {
         OknetConfig.logInterceptor = logInterceptor;

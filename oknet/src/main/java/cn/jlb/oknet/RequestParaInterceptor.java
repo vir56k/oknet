@@ -12,14 +12,14 @@ public interface RequestParaInterceptor {
 
     /**
      * 普通消息的 参数拦截
-     * @param para
+     * @param para 参数
      */
     void onProcessCommonRequestPara(Map<String, String> para);
 
     /**
      * 文件上传时的消息拦截
-     * @param paras
-     * @param fileParas
+     * @param paras 参数
+     * @param fileParas 参数
      */
     void onProcessUploadFileRequestPara(Map<String, String> paras, Map<String, File> fileParas);
 }

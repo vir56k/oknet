@@ -1,6 +1,8 @@
 package cn.jlb.oknet;
 
 /**
+ * ErrorCodeHandler
+ *
  * Created by dreamtang860 on 1/8/16.
  */
 

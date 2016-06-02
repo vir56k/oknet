@@ -81,7 +81,7 @@ public class RequestBuilder {
     /**
      * 同步执行
      *
-     * @return
+     * @return CommonRequest
      */
     public CommonRequest syncExcute() {
         try {
@@ -94,7 +94,7 @@ public class RequestBuilder {
 
     /**
      * 执行请求
-     * @return
+     * @return CommonRequest
      */
     public CommonRequest excute() {
         try {

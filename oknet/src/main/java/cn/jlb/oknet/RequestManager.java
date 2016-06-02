@@ -27,7 +27,7 @@ public class RequestManager {
     /**
      * 参数拦截器
      *
-     * @param requestParaInterceptor
+     * @param requestParaInterceptor requestParaInterceptor
      */
     public static void setRequestParaInterceptor(RequestParaInterceptor requestParaInterceptor) {
         sMyRequestParaInterceptor = requestParaInterceptor;
@@ -36,7 +36,7 @@ public class RequestManager {
     /**
      * 默认异常处理器
      *
-     * @param defaultExceptionHandler
+     * @param defaultExceptionHandler defaultExceptionHandler
      */
     public static void setDefaultExceptionHandler(DefaultExceptionHandler defaultExceptionHandler) {
         sDefaultExceptionHandler = defaultExceptionHandler;
@@ -45,7 +45,8 @@ public class RequestManager {
     /**
      * 同步执行请求
      *
-     * @param myRequest
+     * @param myRequest myRequest
+     * @return CommonRequest
      */
     public static CommonRequest syncExcute(final CommonRequest myRequest) {
         ensureInit();
@@ -86,8 +87,8 @@ public class RequestManager {
 
     /**
      * 异步执行请求
-     *
-     * @param myRequest
+     * @param myRequest myRequest
+     * @return CommonRequest
      */
     public static CommonRequest excute(final CommonRequest myRequest) {
         ensureInit();
@@ -131,8 +132,8 @@ public class RequestManager {
     /**
      * 异步执行，文件上传
      *
-     * @param myRequest
-     * @return
+     * @param myRequest myRequest
+     * @return CommonRequest
      */
     public static CommonRequest excute(final FileUploadRequest myRequest) {
         ensureInit();
@@ -247,7 +248,7 @@ public class RequestManager {
         /**
          * 运行在ui线程
          *
-         * @param runnable
+         * @param runnable runnable
          */
         private static void runOnUiThread(ParaRunnable runnable) {
             mHandler.post(runnable);

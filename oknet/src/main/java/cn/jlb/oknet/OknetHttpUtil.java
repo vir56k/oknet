@@ -18,6 +18,7 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 /**
+ * OknetHttpUtil
  * Created by zhangyunfei on 16/3/11.
  */
 public class OknetHttpUtil {
@@ -48,6 +49,9 @@ public class OknetHttpUtil {
 
     /**
      * 同步执行
+     * @param request request
+     * @return call
+     * @throws IOException ex
      */
     public static Call newCall(Request request) throws IOException {
         return mOkHttpClient.newCall(request);
@@ -55,6 +59,9 @@ public class OknetHttpUtil {
 
     /**
      * 同步执行
+     * @param request request
+     * @return Response
+     * @throws IOException ex
      */
     public static Response execute(Request request) throws IOException {
         return mOkHttpClient.newCall(request).execute();
@@ -62,6 +69,9 @@ public class OknetHttpUtil {
 
     /**
      * 异步访问
+     * @param request request
+     * @param responseCallback responseCallback
+     * @return Call
      */
     public static Call enqueue(Request request, Callback responseCallback) {
         Call call = mOkHttpClient.newCall(request);
@@ -71,6 +81,7 @@ public class OknetHttpUtil {
 
     /**
      * 开启异步线程访问网络, 且不在意返回结果（实现空callback）
+     * @param  request request
      */
     public static void enqueue(Request request) {
         mOkHttpClient.newCall(request).enqueue(new Callback() {
@@ -88,10 +99,9 @@ public class OknetHttpUtil {
 
     /**
      * get 请求
-     *
      * @param url
-     * @return
-     * @throws IOException
+     * @return String
+     * @throws IOException ex
      */
     public static String get(String url) throws IOException {
         Request request = new Request.Builder().url(url).build();

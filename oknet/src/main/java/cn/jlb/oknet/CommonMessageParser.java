@@ -6,13 +6,17 @@ import org.json.JSONObject;
 
 
 /**
+ * CommonMessage Parser
  * Created by songzhongkun on 15/9/24.
  */
 public class CommonMessageParser {
     private static final String TAG = CommonMessageParser.class.getSimpleName();
 
     /**
-     * @Description: 解析成实体
+     * 解析成实体
+     * @param responseString responseString
+     * @return CommonMessage
+     * @throws JSONException ex
      */
     public static CommonMessage parse(String responseString) throws JSONException {
         if (responseString == null)

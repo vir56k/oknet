@@ -145,9 +145,7 @@ public class FileDownloader {
 
         /**
          * 重写调用实际的响应体的contentLength
-         *
-         * @return contentLength
-         * @throws IOException 异常
+         * @return ex
          */
         @Override
         public long contentLength() {
@@ -156,9 +154,7 @@ public class FileDownloader {
 
         /**
          * 重写进行包装source
-         *
          * @return BufferedSource
-         * @throws IOException 异常
          */
         @Override
         public BufferedSource source() {

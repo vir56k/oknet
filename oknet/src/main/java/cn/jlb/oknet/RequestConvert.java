@@ -10,6 +10,7 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 
 /**
+ * RequestConvert
  * Created by zhangyunfei on 16/3/11.
  */
 public class RequestConvert {
